@@ -18,7 +18,6 @@ app.listen(1234, function (err?: Error) {
   }
 
   console.log('Started at http://localhost:1234')
-  console.log('here;')
 })
 
 app.get('/test', (_req: Request, res: Response) => {
@@ -28,6 +27,7 @@ app.get('/test', (_req: Request, res: Response) => {
 app.use(function fourOhFourHandler(_req: Request, res: Response) {
   res.status(404).send()
 })
+
 app.use(function fiveHundredHandler(err: any, _req: Request, res: Response, _next: NextFunction) {
   console.error(err)
   res.status(500).send()
