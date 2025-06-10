@@ -132,3 +132,7 @@ dist
 .yarn/install-state.gz
 .pnp.*
 /src/generated/prisma
+
+# config files
+config/development.json
+config/production.json
