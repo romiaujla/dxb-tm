@@ -22,7 +22,7 @@ app.listen(1234, function (err?: Error) {
 })
 
 app.get('/test', (_req: Request, res: Response) => {
-  res.status(404).send('Server is running!')
+  res.status(200).send('Server is running!')
 })
 
 app.use(function fourOhFourHandler(_req: Request, res: Response) {
