@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "packages/dxb-tm-core"
+    },
+    {
+      "path": "apps/dxb-tm-client"
+    },
+    {
+      "path": "apps/dxb-tm-server"
+    }
+  ]
+}
