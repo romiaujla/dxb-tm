@@ -10,7 +10,9 @@
     "start": "node ./dist/index.js",
     "dev": "nodemon ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --project tsconfig.json"
+    "build": "tsc --project tsconfig.json",
+    "migrate:dev": "pnpm prisma migrate dev --name init",
+    "migrate:production": "pnpm exec dotenv -e .env.production -- prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@types/express": "^5.0.3",
     "@types/node": "^20",
+    "dotenv-cli": "^8.0.0",
     "nodemon": "^3.0.0",
     "prisma": "^6.9.0",
     "typescript": "^5.8.3"

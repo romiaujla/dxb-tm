@@ -13,3 +13,61 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Instance {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedById Int
+  deletedAt   DateTime?
+  deletedById Int?
+
+  name        String
+  alias       String
+  description String?
+  active      Boolean @default(true)
+
+  userInstances UserInstance[]
+
+  @@map("instance")
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedById Int
+  deletedAt   DateTime?
+  deletedById Int?
+
+  firstName  String
+  middleName String?
+  lastName   String
+  email      String  @unique
+  password   String
+  active     Boolean @default(true)
+
+  userInstances UserInstance[]
+
+  @@map("user")
+}
+
+model UserInstance {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  createdById Int
+  updatedAt   DateTime  @updatedAt
+  updatedById Int
+  deletedAt   DateTime?
+  deletedById Int?
+
+  fkUserId     Int
+  fkInstanceId Int
+
+  user     User     @relation(fields: [fkUserId], references: [id])
+  instance Instance @relation(fields: [fkInstanceId], references: [id])
+
+  @@map("user_instance")
+}
