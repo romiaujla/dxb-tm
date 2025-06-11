@@ -1,5 +1,4 @@
-import { InstanceModel, InstanceSchema } from 'dxb-tm-core/src';
-import { ObjectNameEnum } from 'dxb-tm-core/src/core/enums';
+import { InstanceModel, InstanceSchema, ObjectNameEnum } from 'dxb-tm-core';
 import { ZodError } from 'zod';
 import type { ObjectCreateResponse } from '../models/object-create-response.model';
 import { ObjectService } from '../services/object.service';
@@ -12,7 +11,7 @@ export class InstanceController {
     }
 
 
-    public async create(instance: InstanceModel, objectName: ObjectNameEnum): Promise<ObjectCreateResponse<InstanceModel>> {
+    public async create(instance: InstanceModel): Promise<ObjectCreateResponse<InstanceModel>> {
         console.log('Creating instance:', instance);
 
         try {
@@ -29,7 +28,7 @@ export class InstanceController {
             console.log('Parsed instance:', parsed);
 
             return this._objectService.createObject<InstanceModel>({
-                objectName,
+                objectName: ObjectNameEnum.INSTANCE,
                 data: parsed,
             });
 

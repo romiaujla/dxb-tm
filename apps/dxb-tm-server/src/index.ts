@@ -1,11 +1,13 @@
 'use strict'
 import express, { NextFunction, Request, Response } from 'express';
 import { env } from 'process';
+import instanceRoutes from './routes/instanceRoutes';
 
 /**
  * Setting up the environment
  */
 const app = express();
+app.use(express.json());
 export default app;
 const port = env.PORT || 3000;
 
@@ -28,6 +30,7 @@ app.get('/test', (_req: Request, res: Response) => {
   res.status(200).send('Server is running!')
 })
 
+app.use('/instances', instanceRoutes);
 /**
  * Error handlers
  */

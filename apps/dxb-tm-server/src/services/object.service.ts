@@ -1,8 +1,14 @@
-import type { ObjectNameEnum } from "dxb-tm-core/src/core/enums";
+import type { ObjectNameEnum } from "dxb-tm-core";
+import { PrismaClient } from "../generated/prisma";
 import type { ObjectCreateResponse } from "../models/object-create-response.model";
-import prisma from "../prisma/client";
 
 export class ObjectService {
+    private prisma: PrismaClient;
+
+    constructor() {
+        this.prisma = new PrismaClient();
+    }
+
     public async createObject<T>(options: {
         objectName: ObjectNameEnum;
         data: Partial<T>;
@@ -11,7 +17,8 @@ export class ObjectService {
         const { objectName, data, userId } = options;
 
         try {
-            const newObject = await prisma[objectName].create({
+            const modelDelegate = (this.prisma as any)[objectName];
+            const newObject = await modelDelegate.create({
                 data: {
                     ...data,
                     createdBy: userId ?? 0,

@@ -1,11 +1,23 @@
-import { ObjectNameEnum } from 'dxb-tm-core/src/core/enums';
 import { Router } from 'express';
 import { InstanceController } from '../controllers/instanceController';
 
 const router = Router();
 const instanceController = new InstanceController();
 
-router.post('/instance', async (req, _, next) => {
-    console.log('request body:', req.body);
-    await instanceController.create(req.body, ObjectNameEnum.INSTANCE).catch(next);
+router.get('/', async (_, response) => {
+    response.status(200).json({ message: 'GET /instances - Working' });
 });
+
+router.post('/', async (request, response, next) => {
+    try {
+        const data = request.body;
+        const res = await instanceController.create(data);
+
+        response.status(200).json(res);
+    } catch (error) {
+        next(error);
+    }
+
+});
+
+export default router;

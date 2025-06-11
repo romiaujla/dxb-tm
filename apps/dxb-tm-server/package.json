@@ -7,14 +7,17 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "pnpm build && node ./dist/index.js",
-    "dev": "pnpm build && nodemon ./dist/index.js",
+    "start": "pnpm build && node ./dist/src/index.js",
+    "dev": "pnpm build && nodemon ./dist/src/index.js",
+    "dev:watch": "nodemon --watch src --ext ts --exec \"pnpm run build && pnpm run dev\"",
+    "dev:test": "dotenv -e .env.test -- nodemon --watch src --ext ts --exec \"pnpm run dev\"",
     "test": "mocha -r ts-node/register 'tests/**/*.test.ts'",
     "test:watch": "dotenv -e .env.test -- nodemon --watch src --watch tests --ext ts --exec \"mocha -r ts-node/register 'tests/**/*.test.ts'\"",
-    "build": "tsc --project tsconfig.json",
+    "build": "rm -rf dist && npx tsc --project tsconfig.json",
     "migrate:dev": "pnpm prisma migrate dev --name init",
     "migrate:production": "pnpm exec dotenv -e .env.production -- prisma migrate deploy",
-    "migrate:test": "pnpm exec dotenv -e .env.test -- prisma migrate deploy"
+    "migrate:test": "pnpm exec dotenv -e .env.test -- prisma migrate deploy",
+    "postbuild": "cp -R src/generated dist/src/generated"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
