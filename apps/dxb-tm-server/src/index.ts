@@ -5,19 +5,21 @@ import { env } from 'process';
 /**
  * Setting up the environment
  */
-const app = express()
+const app = express();
+export default app;
 const port = env.PORT || 3000;
 
 /**
  * Starting the server
  */
-app.listen(port, function (err?: Error) {
-  if (err) {
-    return console.error(err)
-  }
-
-  console.log(`Started at http://localhost:${port}`)
-})
+if (require.main === module) {
+  app.listen(port, function (err?: Error) {
+    if (err) {
+      return console.error(err);
+    }
+    console.log(`Started at http://localhost:${port}`);
+  });
+}
 
 /**
  * Routes

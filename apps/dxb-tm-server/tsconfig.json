@@ -11,6 +11,7 @@
     "noUnusedParameters": true
   },
   "include": [
-    "src"
+    "src",
+    "tests"
   ]
 }
