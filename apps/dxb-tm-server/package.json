@@ -7,8 +7,8 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "start": "node ./dist/index.js",
-    "dev": "nodemon ./dist/index.js",
+    "start": "pnpm build && node ./dist/index.js",
+    "dev": "pnpm build && nodemon ./dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --project tsconfig.json",
     "migrate:dev": "pnpm prisma migrate dev --name init",
@@ -17,11 +17,13 @@
   "dependencies": {
     "@prisma/client": "^6.9.0",
     "dot-env": "^0.0.1",
+    "dxb-tm-core": "workspace:*",
     "express": "5.1.0",
     "http-errors": "2.0.0",
     "pino": "9.7.0",
     "pino-http": "10.5.0",
-    "pino-pretty": "13.0.0"
+    "pino-pretty": "13.0.0",
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@types/express": "^5.0.3",

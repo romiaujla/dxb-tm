@@ -1,29 +1,34 @@
 'use strict'
-import express, { NextFunction, Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express';
+import { env } from 'process';
 
-// Create the express app
+/**
+ * Setting up the environment
+ */
 const app = express()
+const port = env.PORT || 3000;
 
-// Routes and middleware
-// app.use(/* ... */)
-// app.get(/* ... */)
-
-// Error handlers
-
-
-// Start server
-app.listen(1234, function (err?: Error) {
+/**
+ * Starting the server
+ */
+app.listen(port, function (err?: Error) {
   if (err) {
     return console.error(err)
   }
 
-  console.log('Started at http://localhost:1234')
+  console.log(`Started at http://localhost:${port}`)
 })
 
+/**
+ * Routes
+ */
 app.get('/test', (_req: Request, res: Response) => {
   res.status(200).send('Server is running!')
 })
 
+/**
+ * Error handlers
+ */
 app.use(function fourOhFourHandler(_req: Request, res: Response) {
   res.status(404).send()
 })
