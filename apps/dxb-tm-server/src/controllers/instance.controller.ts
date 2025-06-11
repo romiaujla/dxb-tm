@@ -27,8 +27,6 @@ export class InstanceController {
                 updatedById: true
             }).parse(instance);
 
-            console.log('Parsed instance:', parsed);
-
             return this._objectService.createObject<InstanceModel>({
                 objectName,
                 data: parsed,

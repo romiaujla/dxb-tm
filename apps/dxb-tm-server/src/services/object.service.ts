@@ -16,8 +16,6 @@ export class ObjectService {
     }): Promise<ObjectCreateResponse<T>> {
         const { objectName, data, userId } = options;
 
-        console.log('Creating object:', objectName, data, userId);
-
         try {
             const modelDelegate = (this.prisma as any)[objectName];
 
@@ -30,8 +28,6 @@ export class ObjectService {
                     updatedAt: new Date().toISOString(),
                 }
             }) as T;
-
-            console.log('Created new object:', newObject);
 
             return {
                 status: 200,
