@@ -1,7 +1,9 @@
 import { expect } from 'chai';
 import { it } from 'mocha';
 import request from 'supertest';
-import expressApp from '../../src/index';
+import { App } from '../../src/app';
+
+const expressApp = new App().getServer();
 
 describe('GET /test', () => {
     it('should return 200 and "Server is running!"', async () => {

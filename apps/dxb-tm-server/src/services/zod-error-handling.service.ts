@@ -7,10 +7,19 @@ export class ZodErrorHandlingService {
         const { error, objectName } = options;
         const firstError = error.errors[0];
 
-        if (firstError != null && firstError.message === ZodErrorMessageEnum.REQUIRED) {
+        console.log('First error: ', firstError);
+
+        const isRequiredError = firstError != null && firstError.message === ZodErrorMessageEnum.REQUIRED;
+        const isExpectedStringReceivedNumber = firstError != null && firstError.message === ZodErrorMessageEnum.EXPECTED_STRING_RECEIVED_NUMBER;
+
+        if (isRequiredError) {
             return ZodErrorHandlingService._getZodRequiredErrorMessage({
                 firstError,
                 objectName
+            });
+        } else if (isExpectedStringReceivedNumber) {
+            return ZodErrorHandlingService._getZodExpectedStringReceivedNumberErrorMessage({
+                firstError,
             });
         } else {
             return ZodErrorHandlingService._getDefaultErrorResponse(error);
@@ -27,8 +36,6 @@ export class ZodErrorHandlingService {
         };
     }
 
-
-
     private static _getZodRequiredErrorMessage(options: {
         firstError: ZodIssue,
         objectName?: ObjectNameEnum
@@ -42,8 +49,22 @@ export class ZodErrorHandlingService {
             }
         };
     }
+
+    private static _getZodExpectedStringReceivedNumberErrorMessage(options: {
+        firstError: ZodIssue,
+    }): ResponseModel {
+        const { firstError } = options;
+        return {
+            status: 400,
+            body: {
+                error: 'Invalid Type',
+                message: `'${firstError.path[0]}' is expected to be a string, but received a number`
+            }
+        };
+    }
 }
 
 enum ZodErrorMessageEnum {
     REQUIRED = 'Required',
+    EXPECTED_STRING_RECEIVED_NUMBER = 'Expected string, received number',
 }

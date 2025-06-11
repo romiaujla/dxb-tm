@@ -9,7 +9,7 @@
   "scripts": {
     "start": "pnpm build && node ./dist/src/index.js",
     "dev": "pnpm build && nodemon ./dist/src/index.js",
-    "dev:watch": "nodemon --watch src --ext ts --exec \"pnpm run build && pnpm run dev\"",
+    "dev:watch": "dotenv -e .env.development -- nodemon --watch src --ext ts --exec \"pnpm run build && pnpm run dev\"",
     "dev:test": "dotenv -e .env.test -- nodemon --watch src --ext ts --exec \"pnpm run dev\"",
     "test": "mocha -r ts-node/register 'tests/**/*.test.ts'",
     "test:watch": "dotenv -e .env.test -- nodemon --watch src --watch tests --ext ts --exec \"mocha -r ts-node/register 'tests/**/*.test.ts'\"",

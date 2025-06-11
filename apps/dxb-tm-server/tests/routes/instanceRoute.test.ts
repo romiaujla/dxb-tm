@@ -1,6 +1,8 @@
 import { expect } from "chai";
 import request from "supertest";
-import expressApp from '../../src/index';
+import { App } from "../../src/app";
+
+const expressApp = new App().getServer();
 
 describe('GET /instances', () => {
     it('should return 200 and a success message for GET request', async () => {

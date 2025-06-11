@@ -16,8 +16,11 @@ export class ObjectService {
     }): Promise<ObjectCreateResponse<T>> {
         const { objectName, data, userId } = options;
 
+        console.log('Creating object:', objectName, data, userId);
+
         try {
             const modelDelegate = (this.prisma as any)[objectName];
+
             const newObject = await modelDelegate.create({
                 data: {
                     ...data,

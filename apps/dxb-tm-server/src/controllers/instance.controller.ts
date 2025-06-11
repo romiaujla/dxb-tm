@@ -37,7 +37,7 @@ export class InstanceController {
 
         } catch (error) {
             if (error instanceof ZodError) {
-                ZodErrorHandlingService.handleZodError({
+                return ZodErrorHandlingService.handleZodError({
                     error: error,
                     objectName
                 })
