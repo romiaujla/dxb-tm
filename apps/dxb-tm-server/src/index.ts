@@ -1,7 +1,7 @@
 'use strict'
 import express, { NextFunction, Request, Response } from 'express';
 import { env } from 'process';
-import instanceRoutes from './routes/instanceRoutes';
+import instanceRoutes from './routes/instance.routes';
 
 /**
  * Setting up the environment

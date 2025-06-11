@@ -2,6 +2,7 @@ import { InstanceModel, InstanceSchema, ObjectNameEnum } from 'dxb-tm-core';
 import { ZodError } from 'zod';
 import type { ObjectCreateResponse } from '../models/object-create-response.model';
 import { ObjectService } from '../services/object.service';
+import { ZodErrorHandlingService } from '../services/zod-error-handling.service';
 
 export class InstanceController {
     private _objectService: ObjectService;
@@ -12,7 +13,7 @@ export class InstanceController {
 
 
     public async create(instance: InstanceModel): Promise<ObjectCreateResponse<InstanceModel>> {
-        console.log('Creating instance:', instance);
+        const objectName = ObjectNameEnum.INSTANCE;
 
         try {
             const parsed = InstanceSchema.omit({
@@ -28,23 +29,20 @@ export class InstanceController {
             console.log('Parsed instance:', parsed);
 
             return this._objectService.createObject<InstanceModel>({
-                objectName: ObjectNameEnum.INSTANCE,
+                objectName,
                 data: parsed,
             });
 
 
-        } catch (err) {
-            if (err instanceof ZodError) {
-                return {
-                    status: 400,
-                    body: {
-                        message: 'Validation error',
-                        error: err.errors.map(e => e.message).join(', ')
-                    }
-                };
+        } catch (error) {
+            if (error instanceof ZodError) {
+                ZodErrorHandlingService.handleZodError({
+                    error: error,
+                    objectName
+                })
             }
 
-            console.error(err);
+            console.error(error);
             return {
                 status: 500,
                 body: {
