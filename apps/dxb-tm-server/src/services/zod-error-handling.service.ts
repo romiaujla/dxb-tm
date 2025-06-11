@@ -17,11 +17,11 @@ export class ZodErrorHandlingService {
         }
     }
 
-    private static _getDefaultErrorResponse(err: ZodError): ResponseModel {
+    private static _getDefaultErrorResponse(error: ZodError): ResponseModel {
         return {
             status: 400,
             body: {
-                error: err.errors.map(e => e.message).join(', '),
+                error: error.errors.map(e => e.message).join(', '),
                 message: 'Validation error'
             }
         };

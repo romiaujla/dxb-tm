@@ -1,6 +1,7 @@
 import { InstanceModel, InstanceSchema, ObjectNameEnum } from 'dxb-tm-core';
 import { ZodError } from 'zod';
 import type { ObjectCreateResponse } from '../models/object-create-response.model';
+import { ErrorHandlingService } from '../services/error-handling.service';
 import { ObjectService } from '../services/object.service';
 import { ZodErrorHandlingService } from '../services/zod-error-handling.service';
 
@@ -42,15 +43,7 @@ export class InstanceController {
                 })
             }
 
-            console.error(error);
-            return {
-                status: 500,
-                body: {
-                    message: 'Internal server error',
-                    error: 'An unexpected error occurred'
-                }
-            };
-
+            return ErrorHandlingService.get500InternalErrorResponse();
         }
     }
 }
