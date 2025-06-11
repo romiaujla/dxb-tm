@@ -22,9 +22,9 @@ export class InstanceController {
                 createdAt: true,
                 updatedAt: true,
                 deletedAt: true,
-                deletedBy: true,
-                createdBy: true,
-                updatedBy: true
+                deletedById: true,
+                createdById: true,
+                updatedById: true
             }).parse(instance);
 
             console.log('Parsed instance:', parsed);

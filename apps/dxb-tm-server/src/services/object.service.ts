@@ -24,8 +24,8 @@ export class ObjectService {
             const newObject = await modelDelegate.create({
                 data: {
                     ...data,
-                    createdBy: userId ?? 0,
-                    updatedBy: userId ?? 0,
+                    createdById: userId ?? 0,
+                    updatedById: userId ?? 0,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                 }

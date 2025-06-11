@@ -14,8 +14,6 @@ export class App {
 
     private _configureMiddleware() {
         console.log('Configuring middleware');
-        console.log('WARNING: Logging sensitive database URL - Remove in production');
-        console.log('env', process.env.DATABASE_URL)
         this.app.use(express.json());
 
         /**
