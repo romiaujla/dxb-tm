@@ -1,6 +1,8 @@
 import type { ObjectNameEnum } from "dxb-tm-core";
 import { PrismaClient } from "../generated/prisma";
 import type { ObjectCreateResponse } from "../models/object-create-response.model";
+import type { ObjectGetResponse } from "../models/object-get-response.model";
+import type { ObjectUpdateResponse } from "../models/object-update-response.model";
 
 export class ObjectService {
     private prisma: PrismaClient;
@@ -46,5 +48,51 @@ export class ObjectService {
                 }
             };
         }
+    }
+
+    public async getAllObjects<T>(options: {
+        objectName: ObjectNameEnum;
+    }): Promise<ObjectGetResponse<T>> {
+        const { objectName } = options;
+
+        const modelDelegate = (this.prisma as any)[objectName];
+
+        const allObjects = await modelDelegate.findMany() as Array<T>;
+
+        return {
+            status: 200,
+            body: {
+                message: `${objectName} fetched successfully`,
+                data: allObjects
+            }
+        };
+    }
+
+    public async updateObject<T>(options: {
+        objectName: ObjectNameEnum;
+        id: number;
+        data: Partial<T>;
+        userId?: number;
+    }): Promise<ObjectUpdateResponse<T>> {
+        const { objectName, id, data, userId = 0 } = options;
+
+        const modelDelegate = (this.prisma as any)[objectName];
+
+        const updatedObject = await modelDelegate.update({
+            where: { id },
+            data: {
+                ...data,
+                updatedById: userId,
+                updatedAt: new Date().toISOString()
+            }
+        }) as T;
+
+        return {
+            status: 200,
+            body: {
+                message: `${objectName} updated successfully`,
+                data: updatedObject
+            }
+        };
     }
 }

@@ -10,4 +10,13 @@ export class ErrorHandlingService {
             }
         }
     }
+
+    public static get400BadRequestErrorResponse(options: { message: string }): ResponseModel {
+        return {
+            status: 400,
+            body: {
+                message: options.message
+            }
+        }
+    }
 }

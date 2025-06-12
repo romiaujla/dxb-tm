@@ -1,7 +1,7 @@
 import type { ResponseModel } from "./response.model";
 
-export interface ObjectCreateResponse<T> extends ResponseModel {
+export interface ObjectGetResponse<T> extends ResponseModel {
     body: ResponseModel['body'] & {
-        data?: T;
+        data?: Array<T>;
     };
 }
