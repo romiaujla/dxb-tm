@@ -7,5 +7,6 @@ export interface ResponseModel {
     body: {
         message: string;
         error?: string;
+        stack?: Array<string>;
     };
 }
