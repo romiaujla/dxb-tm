@@ -19,6 +19,22 @@ router.get("/all", async (_, response, next) => {
   }
 });
 
+router.post("/", async (request, response, next) => {
+  try {
+    const data = request.body;
+    const res = await instanceController.create(data);
+    let status = res.status;
+
+    if (status === 200) {
+      response.status(status).json(res.body.data);
+    } else {
+      response.status(status).json(res);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/:id", async (request, response, next) => {
   try {
     const { id: idString } = request.params;
@@ -31,28 +47,12 @@ router.get("/:id", async (request, response, next) => {
     if (status === 200) {
       const data =
         res.body.data != null &&
-        Array.isArray(res.body.data) &&
-        res.body.data.length > 0
+          Array.isArray(res.body.data) &&
+          res.body.data.length > 0
           ? res.body.data[0]
           : {};
 
       response.status(status).json(data);
-    } else {
-      response.status(status).json(res);
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.post("/", async (request, response, next) => {
-  try {
-    const data = request.body;
-    const res = await instanceController.create(data);
-    let status = res.status;
-
-    if (status === 200) {
-      response.status(status).json(res.body.data);
     } else {
       response.status(status).json(res);
     }
