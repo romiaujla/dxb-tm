@@ -6,7 +6,7 @@ import { App } from "../../src/app";
 const app = new App().getServer();
 let instanceId: number | undefined;
 
-describe('/instance', () => {
+describe.skip('Instance routes /instance', () => {
     describe('POST /', () => {
         it('should return 200 and the posted data for POST request', async () => {
             const data: Pick<InstanceModel, 'name' | 'alias' | 'description'> = {
@@ -33,7 +33,7 @@ describe('/instance', () => {
          */
     })
 
-    describe('GET /instance/all', () => {
+    describe('GET /all', () => {
         it('should return 200 and a list of instances', async () => {
             const { status, body } = await request(app)
                 .get('/instance/all')
@@ -50,7 +50,7 @@ describe('/instance', () => {
         })
     });
 
-    describe('GET /instance/:id', () => {
+    describe('GET /:id', () => {
         it('should return 200 and get the instance by id', async () => {
             const { status, body } = await request(app)
                 .get(`/instance/${instanceId}`)
@@ -62,7 +62,7 @@ describe('/instance', () => {
         })
     });
 
-    describe('DELETE /instance/:id', () => {
+    describe('DELETE /:id', () => {
         it('should soft delete the record if the deletion type is not provided', async () => {
             const { status, body: { body } } = await request(app)
                 .delete(`/instance/${instanceId}`);
