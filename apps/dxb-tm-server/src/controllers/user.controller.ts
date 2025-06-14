@@ -1,11 +1,13 @@
 import { ObjectNameEnum, UserSchema, type UserModel } from "dxb-tm-core";
 import { ZodError } from "zod";
 import { ObjectDeleteTypeEnum } from "../enums/object-delete-type.enum";
-import type { ObjectCreateResponse } from "../models/object-create-response.model";
-import type { ObjectDeleteResponse } from "../models/object-delete-response.model";
-import type { ObjectGetResponse } from "../models/object-get-response.model";
-import type { ObjectUpdateResponse } from "../models/object-update-response.model";
-import type { ResponseModel } from "../models/response.model";
+import type {
+  ObjectCreateResponse,
+  ObjectDeleteResponse,
+  ObjectGetResponse,
+  ObjectUpdateResponse,
+  ResponseModel,
+} from "../models";
 import { ErrorHandlingService } from "../services/error-handling.service";
 import { ObjectService } from "../services/object.service";
 import { ZodErrorHandlingService } from "../services/zod-error-handling.service";
