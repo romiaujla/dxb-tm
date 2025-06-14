@@ -46,7 +46,6 @@ router.post("/", async (request, response, next) => {
       response.status(status).json(res);
     }
   } catch (error) {
-    console.log("error", error);
     next(error);
   }
 });
@@ -56,8 +55,6 @@ router.delete("/:id", async (request, response, next) => {
     const { id: idString } = request.params;
     const id = parseInt(idString, 10);
     const deleteType = request.body?.deleteType ?? ObjectDeleteTypeEnum.SOFT;
-
-    console.log("deleteType", deleteType);
 
     const res = await userController.deleteById({
       id,

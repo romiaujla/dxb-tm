@@ -85,5 +85,40 @@ describe("User Routes /user", () => {
       expect(body.deleted).to.equal(true);
       expect(body.type).to.equal(ObjectDeleteTypeEnum.SOFT);
     });
+
+    it("should hard delete the record if the deletion type is provided", async () => {
+      const email: UserModel["email"] = `test+${getRandomString()}@dxbtm.com`;
+      const firstName: UserModel["firstName"] = getRandomString();
+      const middleName: UserModel["firstName"] = getRandomString();
+      const lastName: UserModel["firstName"] = getRandomString();
+      const password: UserModel["firstName"] = getRandomString(20);
+
+      const data: Pick<
+        UserModel,
+        "email" | "firstName" | "lastName" | "middleName" | "password"
+      > = {
+        email,
+        firstName,
+        middleName,
+        lastName,
+        password,
+      };
+
+      const postResponse = await request(app).post("/user").send(data);
+
+      expect(postResponse.body.id).to.not.be.undefined;
+      userId = postResponse.body.id;
+
+      const {
+        status,
+        body: { body },
+      } = await request(app)
+        .delete(`/user/${userId}`)
+        .send({ deleteType: ObjectDeleteTypeEnum.HARD });
+
+      expect(status).to.equal(200);
+      expect(body.deleted).to.equal(true);
+      expect(body.type).to.equal(ObjectDeleteTypeEnum.HARD);
+    });
   });
 });

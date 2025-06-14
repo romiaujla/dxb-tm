@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "start": "pnpm build && node ./dist/src/index.js",
-    "dev": "pnpm build && nodemon ./dist/src/index.js",
+    "dev": "dotenv -e .env.development.local pnpm build && nodemon ./dist/src/index.js",
     "dev:watch": "dotenv -e .env.development.local -- nodemon --watch src --ext ts --exec \"pnpm run build && pnpm run dev\"",
     "dev:watch:local": "dotenv -e .env.development.local -- nodemon --watch src --ext ts --exec \"pnpm run build && pnpm run dev\"",
     "test": "mocha -r ts-node/register 'tests/**/*.test.ts'",
