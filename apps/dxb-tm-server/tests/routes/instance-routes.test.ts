@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { type InstanceModel } from "dxb-tm-core";
 import request from "supertest";
 import { App } from "../../src/app";
+import { getRandomString } from "./utility/utility.functions";
 
 const app = new App().getServer();
 let instanceId: number | undefined;
@@ -59,6 +60,19 @@ describe("Instance routes /instance", () => {
       expect(status).to.equal(200);
       expect(body).to.haveOwnProperty("id");
       expect(body.id).to.equal(instanceId);
+    });
+  });
+
+  describe("PATCH /:id", () => {
+    it("should return 200 and the updated data for PATCH request", async () => {
+      const name: InstanceModel["name"] = `test+${getRandomString()}`;
+
+      const { status, body } = await request(app)
+        .patch(`/instance/${instanceId}`)
+        .send({ name });
+
+      expect(status).to.equal(200);
+      expect(body.name).to.equal(name);
     });
   });
 
