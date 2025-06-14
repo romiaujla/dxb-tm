@@ -1,4 +1,4 @@
-import { InstanceModel, InstanceSchema, ObjectNameEnum } from "dxb-tm-core";
+import { ObjectNameEnum, UserSchema, type UserModel } from "dxb-tm-core";
 import { ZodError } from "zod";
 import { ObjectDeleteTypeEnum } from "../enums/object-delete-type.enum";
 import type {
@@ -12,20 +12,34 @@ import { ErrorHandlingService } from "../services/error-handling.service";
 import { ObjectService } from "../services/object.service";
 import { ZodErrorHandlingService } from "../services/zod-error-handling.service";
 
-export class InstanceController {
+export class UserController {
   private _objectService: ObjectService;
 
   constructor() {
     this._objectService = new ObjectService();
   }
 
+  public async getById(options: {
+    id: number;
+    getDeleted?: boolean;
+  }): Promise<ObjectGetResponse<UserModel>> {
+    const { id, getDeleted = false } = options;
+    const objectName = ObjectNameEnum.USER;
+
+    return this._objectService.getObjectById<UserModel>({
+      objectName,
+      id,
+      getDeleted,
+    });
+  }
+
   public async create(
-    instance: InstanceModel,
-  ): Promise<ObjectCreateResponse<InstanceModel>> {
-    const objectName = ObjectNameEnum.INSTANCE;
+    user: UserModel,
+  ): Promise<ObjectCreateResponse<UserModel>> {
+    const objectName = ObjectNameEnum.USER;
 
     try {
-      const parsed = InstanceSchema.omit({
+      const parsed = UserSchema.omit({
         id: true,
         createdAt: true,
         updatedAt: true,
@@ -33,9 +47,9 @@ export class InstanceController {
         deletedById: true,
         createdById: true,
         updatedById: true,
-      }).parse(instance);
+      }).parse(user);
 
-      return this._objectService.createObject<InstanceModel>({
+      return this._objectService.createObject<UserModel>({
         objectName,
         data: parsed,
       });
@@ -51,46 +65,39 @@ export class InstanceController {
     }
   }
 
-  public async getAll(): Promise<ObjectGetResponse<InstanceModel>> {
-    const objectName = ObjectNameEnum.INSTANCE;
-
-    return this._objectService.getAllObjects<InstanceModel>({
-      objectName,
-    });
-  }
-
-  public async getById(options: {
+  public async deleteById(options: {
     id: number;
-    getDeleted?: boolean;
-  }): Promise<ObjectGetResponse<InstanceModel>> {
-    const { id, getDeleted = false } = options;
-    const objectName = ObjectNameEnum.INSTANCE;
+    deleteType?: ObjectDeleteTypeEnum;
+  }): Promise<ObjectDeleteResponse | ResponseModel> {
+    const { id, deleteType = ObjectDeleteTypeEnum.SOFT } = options;
+    const objectName = ObjectNameEnum.USER;
 
-    return this._objectService.getObjectById<InstanceModel>({
+    return this._objectService.deleteObjectById({
       objectName,
       id,
-      getDeleted,
+      deleteType,
     });
   }
 
-  public async updateById(
-    id: number,
-    instance: InstanceModel,
-  ): Promise<ObjectUpdateResponse<InstanceModel>> {
-    const objectName = ObjectNameEnum.INSTANCE;
-    const PartialInstanceSchema = InstanceSchema.partial();
+  public async updateById(options: {
+    id: number;
+    data: Partial<UserModel>;
+  }): Promise<ObjectUpdateResponse<UserModel>> {
+    const { id, data } = options;
+    const objectName = ObjectNameEnum.USER;
+    const PartialUserSchema = UserSchema.partial();
 
     try {
-      if (instance == null || Object.keys(instance).length === 0) {
+      if (data == null || Object.keys(data).length === 0) {
         throw new Error("No data provided to update");
       }
 
-      PartialInstanceSchema.parse(instance);
+      const parsed = PartialUserSchema.parse(data);
 
-      return this._objectService.updateObject<InstanceModel>({
+      return this._objectService.updateObject<UserModel>({
         objectName,
         id,
-        data: instance,
+        data: parsed,
       });
     } catch (error) {
       if (error instanceof ZodError) {
@@ -111,18 +118,5 @@ export class InstanceController {
 
       return ErrorHandlingService.get500InternalErrorResponse(error);
     }
-  }
-
-  public async deleteById(
-    id: number,
-    deleteType: ObjectDeleteTypeEnum = ObjectDeleteTypeEnum.SOFT,
-  ): Promise<ObjectDeleteResponse | ResponseModel> {
-    const objectName = ObjectNameEnum.INSTANCE;
-
-    return this._objectService.deleteObjectById({
-      objectName,
-      id,
-      deleteType,
-    });
   }
 }
