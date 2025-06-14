@@ -55,10 +55,7 @@ describe("User Routes /user", () => {
         password: getRandomString(),
       };
 
-      const {
-        status,
-        body: { body },
-      } = await request(app).post("/user").send(data);
+      const { status, body } = await request(app).post("/user").send(data);
 
       expect(status).to.equal(400);
       expect(body.message).to.equal("'email' is not a valid email");

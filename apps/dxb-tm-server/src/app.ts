@@ -1,5 +1,6 @@
 import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
+import { AppError } from "./errors/app.error";
 import instanceRoutes from "./routes/instance.routes";
 import userRoutes from "./routes/user.routes";
 
@@ -14,18 +15,30 @@ export class App {
   }
 
   private _configureMiddleware() {
-    console.log("Configuring middleware");
+    console.log("Configuring middleware...");
     this._app.use(express.json());
   }
 
   private _configureRoutes() {
-    console.log("Configuring routes");
+    console.log("Configuring routes...");
     this._app.use("/instance", instanceRoutes);
     this._app.use("/user", userRoutes);
   }
 
   private _configureErrorHandling() {
-    console.log("Configuring error handling");
+    console.log("Configuring error handling...");
+    this._app.use(
+      (err: Error, _req: Request, res: Response, _next: NextFunction) => {
+        if (err instanceof AppError) {
+          res.status(err.statusCode).json({
+            message: err.message,
+            error: err.error,
+            stack: err.stack?.split("\n"),
+          });
+        }
+      },
+    );
+
     this._app.use((_req: Request, _res: Response) => {
       _res.status(404).send();
     });
@@ -43,7 +56,7 @@ export class App {
 
   public listen(port: number | string) {
     this._app.listen(port, () => {
-      console.log(`Server is running on http://localhost:${port}`);
+      console.log(`Server is running on http://localhost:${port}...`);
     });
   }
 
