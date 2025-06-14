@@ -66,4 +66,26 @@ router.delete("/:id", async (request, response, next) => {
     next(error);
   }
 });
+
+router.patch("/:id", async (request, response, next) => {
+  try {
+    const { id: idString } = request.params;
+    const id = parseInt(idString, 10);
+    const data = request.body;
+
+    const res = await userController.updateById({
+      id,
+      data,
+    });
+
+    if (res.status === 200 && res.body.data != null) {
+      response.status(res.status).json(res.body.data);
+    } else {
+      response.status(res.status).json(res);
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

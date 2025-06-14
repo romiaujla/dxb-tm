@@ -4,6 +4,7 @@ import { ObjectDeleteTypeEnum } from "../enums/object-delete-type.enum";
 import type { ObjectCreateResponse } from "../models/object-create-response.model";
 import type { ObjectDeleteResponse } from "../models/object-delete-response.model";
 import type { ObjectGetResponse } from "../models/object-get-response.model";
+import type { ObjectUpdateResponse } from "../models/object-update-response.model";
 import type { ResponseModel } from "../models/response.model";
 import { ErrorHandlingService } from "../services/error-handling.service";
 import { ObjectService } from "../services/object.service";
@@ -74,5 +75,46 @@ export class UserController {
       id,
       deleteType,
     });
+  }
+
+  public async updateById(options: {
+    id: number;
+    data: Partial<UserModel>;
+  }): Promise<ObjectUpdateResponse<UserModel>> {
+    const { id, data } = options;
+    const objectName = ObjectNameEnum.USER;
+    const PartialUserSchema = UserSchema.partial();
+
+    try {
+      if (data == null || Object.keys(data).length === 0) {
+        throw new Error("No data provided to update");
+      }
+
+      const parsed = PartialUserSchema.parse(data);
+
+      return this._objectService.updateObject<UserModel>({
+        objectName,
+        id,
+        data: parsed,
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return ZodErrorHandlingService.handleZodError({
+          error: error,
+          objectName,
+        });
+      }
+
+      if (
+        error instanceof Error &&
+        error.message === "No data provided to update"
+      ) {
+        return ErrorHandlingService.get400BadRequestErrorResponse({
+          message: error.message,
+        });
+      }
+
+      return ErrorHandlingService.get500InternalErrorResponse(error);
+    }
   }
 }

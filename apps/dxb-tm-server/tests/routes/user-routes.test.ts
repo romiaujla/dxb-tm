@@ -74,6 +74,21 @@ describe("User Routes /user", () => {
     });
   });
 
+  describe("PATCH /:id", () => {
+    it("should return 200 and the updated data for PATCH request", async () => {
+      const email: UserModel["email"] = `test+${getRandomString()}@dxbtm.com`;
+
+      const { status, body } = await request(app)
+        .patch(`/user/${userId}`)
+        .send({
+          email,
+        });
+
+      expect(status).to.equal(200);
+      expect(body.email).to.equal(email);
+    });
+  });
+
   describe("DELETE /:id", () => {
     it("should soft delete the record if the deletion type is not provided", async () => {
       const {
