@@ -1,5 +1,6 @@
 import type { ObjectNameEnum } from "dxb-tm-core";
-import { ZodError, ZodIssue } from "zod";
+import { ZodError } from "zod";
+import { ValidationError } from "../errors/app.error";
 import type { ResponseModel } from "../models/response.model";
 
 export class ZodErrorHandlingService {
@@ -11,7 +12,7 @@ export class ZodErrorHandlingService {
     const firstError = error.errors[0];
 
     if (firstError == null) {
-      return ZodErrorHandlingService._getDefaultErrorResponse(error);
+      throw new ValidationError("Validation error");
     }
 
     const isRequiredError = firstError.message === ZodErrorMessageEnum.REQUIRED;
@@ -24,225 +25,65 @@ export class ZodErrorHandlingService {
     const isInvalidString = firstError.code === ZodErrorCodeEnum.INVALID_STRING;
     const isInvalidEnum =
       firstError.code === ZodErrorCodeEnum.INVALID_ENUM_VALUE;
-    const isInvalidFormat = firstError.code === ZodErrorCodeEnum.INVALID_STRING;
+
+    if (error.errors.length > 1) {
+      throw new ValidationError(
+        error.errors.map((e) => e.message).join(", "),
+        "Multiple validation errors",
+      );
+    }
 
     if (isRequiredError && isInvalidType) {
-      return ZodErrorHandlingService._getZodRequiredErrorMessage({
-        firstError,
-        objectName,
-      });
+      throw new ValidationError(
+        `'${firstError.path[0]}' is a required field on the '${objectName}' table`,
+      );
     }
 
     if (isInvalidType) {
-      return ZodErrorHandlingService._getZodInvalidTypeErrorMessage({
-        firstError,
-      });
+      let message = firstError.message;
+      if ("expected" in firstError && "received" in firstError) {
+        message = `'${firstError.path[0]}' is expected to be a ${firstError.expected}, but received a ${firstError.received}`;
+      }
+      throw new ValidationError(message, "Invalid Type");
     }
 
     if (isTooSmall) {
-      return ZodErrorHandlingService._getZodTooSmallErrorMessage({
-        firstError,
-      });
+      let message = `'${firstError.path[0]}' is too small`;
+      if ("minimum" in firstError) {
+        message = `'${firstError.path[0]}' is too small, minimum length is ${firstError.minimum}`;
+      }
+      throw new ValidationError(message);
     }
 
     if (isTooBig) {
-      return ZodErrorHandlingService._getZodTooBigErrorMessage({
-        firstError,
-      });
+      let message = `'${firstError.path[0]}' is too big`;
+      if ("maximum" in firstError) {
+        message = `'${firstError.path[0]}' is too big, maximum length is ${firstError.maximum}`;
+      }
+      throw new ValidationError(message);
     }
 
     if (isInvalidDate) {
-      return ZodErrorHandlingService._getZodInvalidDateErrorMessage({
-        firstError,
-      });
+      throw new ValidationError(`'${firstError.path[0]}' is not a valid date`);
     }
 
     if (isInvalidEmail) {
-      return ZodErrorHandlingService._getZodInvalidEmailErrorMessage({
-        firstError,
-      });
+      throw new ValidationError(`'${firstError.path[0]}' is not a valid email`);
     }
 
     if (isInvalidString) {
-      return ZodErrorHandlingService._getZodInvalidStringErrorMessage({
-        firstError,
-      });
+      throw new ValidationError(
+        `'${firstError.path[0]}' is not a valid string`,
+      );
     }
 
     if (isInvalidEnum) {
-      return ZodErrorHandlingService._getZodInvalidEnumErrorMessage({
-        firstError,
-      });
+      throw new ValidationError(
+        `'${firstError.path[0]}' is not a valid enum value`,
+      );
     }
 
-    if (isInvalidFormat) {
-      return ZodErrorHandlingService._getZodInvalidFormatErrorMessage({
-        firstError,
-      });
-    }
-
-    if (error.errors.length > 1) {
-      return ZodErrorHandlingService._getMultipleErrorsResponse(error);
-    }
-
-    return ZodErrorHandlingService._getDefaultErrorResponse(error);
-  }
-
-  private static _getDefaultErrorResponse(error: ZodError): ResponseModel {
-    return {
-      status: 400,
-      body: {
-        error: error.errors.map((e) => e.message).join(", "),
-        message: "Validation error",
-      },
-    };
-  }
-
-  private static _getZodRequiredErrorMessage(options: {
-    firstError: ZodIssue;
-    objectName?: ObjectNameEnum;
-  }): ResponseModel {
-    const { firstError, objectName = "Unknown Object" } = options;
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message: `'${firstError.path[0]}' is a required field on the '${objectName}' table`,
-      },
-    };
-  }
-
-  private static _getZodInvalidTypeErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-
-    let message = firstError.message;
-
-    if ("expected" in firstError && "received" in firstError) {
-      message = `'${firstError.path[0]}' is expected to be a ${firstError.expected}, but received a ${firstError.received}`;
-    }
-    return {
-      status: 400,
-      body: {
-        error: "Invalid Type",
-        message,
-      },
-    };
-  }
-
-  private static _getZodTooSmallErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-
-    let message = `'${firstError.path[0]}' is too small`;
-
-    if ("minimum" in firstError) {
-      message = `'${firstError.path[0]}' is too small, minimum length is ${firstError.minimum}`;
-    }
-
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message,
-      },
-    };
-  }
-
-  private static _getZodTooBigErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-    let message = `'${firstError.path[0]}' is too big`;
-
-    if ("maximum" in firstError) {
-      message = `'${firstError.path[0]}' is too big, maximum length is ${firstError.maximum}`;
-    }
-
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message,
-      },
-    };
-  }
-
-  private static _getZodInvalidDateErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message: `'${firstError.path[0]}' is not a valid date`,
-      },
-    };
-  }
-
-  private static _getZodInvalidEmailErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message: `'${firstError.path[0]}' is not a valid email`,
-      },
-    };
-  }
-
-  private static _getZodInvalidStringErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message: `'${firstError.path[0]}' is not a valid string`,
-      },
-    };
-  }
-
-  private static _getZodInvalidEnumErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message: `'${firstError.path[0]}' is not a valid enum value`,
-      },
-    };
-  }
-
-  private static _getZodInvalidFormatErrorMessage(options: {
-    firstError: ZodIssue;
-  }): ResponseModel {
-    const { firstError } = options;
-    return {
-      status: 400,
-      body: {
-        error: "Validation Error",
-        message: `'${firstError.path[0]}' has an invalid format`,
-      },
-    };
-  }
-
-  private static _getMultipleErrorsResponse(error: ZodError): ResponseModel {
-    return {
-      status: 400,
-      body: {
-        error: "Multiple validation errors",
-        message: error.errors.map((e) => e.message).join(", "),
-      },
-    };
+    throw new ValidationError("Validation error");
   }
 }
 
@@ -258,5 +99,4 @@ enum ZodErrorCodeEnum {
   INVALID_DATE = "invalid_date",
   INVALID_STRING = "invalid_string",
   INVALID_ENUM_VALUE = "invalid_enum_value",
-  INVALID_FORMAT = "invalid_format",
 }

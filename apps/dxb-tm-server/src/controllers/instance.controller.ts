@@ -1,6 +1,7 @@
 import { InstanceModel, InstanceSchema, ObjectNameEnum } from "dxb-tm-core";
 import { ZodError } from "zod";
 import { ObjectDeleteTypeEnum } from "../enums/object-delete-type.enum";
+import { BadRequestError, InternalServerError } from "../errors/app.error";
 import type {
   ObjectCreateResponse,
   ObjectDeleteResponse,
@@ -8,7 +9,6 @@ import type {
   ObjectUpdateResponse,
   ResponseModel,
 } from "../models";
-import { ErrorHandlingService } from "../services/error-handling.service";
 import { ObjectService } from "../services/object.service";
 import { ZodErrorHandlingService } from "../services/zod-error-handling.service";
 
@@ -47,7 +47,7 @@ export class InstanceController {
         });
       }
 
-      return ErrorHandlingService.get500InternalErrorResponse(error);
+      throw new InternalServerError("An unexpected error occurred");
     }
   }
 
@@ -104,12 +104,10 @@ export class InstanceController {
         error instanceof Error &&
         error.message === "No data provided to update"
       ) {
-        return ErrorHandlingService.get400BadRequestErrorResponse({
-          message: error.message,
-        });
+        throw new BadRequestError(error.message);
       }
 
-      return ErrorHandlingService.get500InternalErrorResponse(error);
+      throw new InternalServerError("An unexpected error occurred");
     }
   }
 

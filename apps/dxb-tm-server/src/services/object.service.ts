@@ -1,12 +1,16 @@
 import type { ObjectNameEnum } from "dxb-tm-core";
 import { ObjectDeleteTypeEnum } from "../enums/object-delete-type.enum";
+import {
+  BadRequestError,
+  InternalServerError,
+  NotFoundError,
+} from "../errors/app.error";
 import { Prisma, PrismaClient } from "../generated/prisma";
 import type { ObjectCreateResponse } from "../models/object-create-response.model";
 import type { ObjectDeleteResponse } from "../models/object-delete-response.model";
 import type { ObjectGetResponse } from "../models/object-get-response.model";
 import type { ObjectUpdateResponse } from "../models/object-update-response.model";
 import type { ResponseModel } from "../models/response.model";
-import { ErrorHandlingService } from "./error-handling.service";
 
 export class ObjectService {
   private prisma: PrismaClient;
@@ -45,23 +49,10 @@ export class ObjectService {
     } catch (err) {
       console.error(err);
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        return {
-          status: 400,
-          body: {
-            message: err.message,
-            error: err.message,
-            stack: err.stack?.split("\n"),
-          },
-        };
+        throw new BadRequestError(err.message);
       }
 
-      return {
-        status: 500,
-        body: {
-          message: "Internal server error",
-          error: "An unexpected error occurred",
-        },
-      };
+      throw new InternalServerError("An unexpected error occurred");
     }
   }
 
@@ -108,17 +99,12 @@ export class ObjectService {
       };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        return {
-          status: 400,
-          body: {
-            message: `Object: ${error.meta?.model} with id ${id} not found`,
-            error: error.message,
-            stack: error.stack?.split("\n"),
-          },
-        };
+        throw new NotFoundError(
+          `Object: ${error.meta?.model} with id ${id} not found`,
+        );
       }
 
-      return ErrorHandlingService.get500InternalErrorResponse(error);
+      throw new InternalServerError("An unexpected error occurred");
     }
   }
 
@@ -151,17 +137,12 @@ export class ObjectService {
       };
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        return {
-          status: 400,
-          body: {
-            message: `Object: ${error.meta?.model} with id ${id} not found`,
-            error: error.message,
-            stack: error.stack?.split("\n"),
-          },
-        };
+        throw new NotFoundError(
+          `Object: ${error.meta?.model} with id ${id} not found`,
+        );
       }
 
-      return ErrorHandlingService.get500InternalErrorResponse(error);
+      throw new InternalServerError("An unexpected error occurred");
     }
   }
 
@@ -223,7 +204,28 @@ export class ObjectService {
         },
       };
     } catch (error) {
-      return ErrorHandlingService.get500InternalErrorResponse(error);
+      throw new InternalServerError("An unexpected error occurred");
     }
+  }
+
+  public async getObjectByQuery<T, TQuery>(options: {
+    objectName: ObjectNameEnum;
+    query: TQuery;
+  }): Promise<ObjectGetResponse<T>> {
+    const { objectName, query } = options;
+
+    const modelDelegate = (this.prisma as any)[objectName];
+
+    const objects = (await modelDelegate.findMany({
+      where: query,
+    })) as Array<T>;
+
+    return {
+      status: 200,
+      body: {
+        message: `${objectName} fetched successfully`,
+        data: objects,
+      },
+    };
   }
 }

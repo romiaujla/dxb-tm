@@ -2,13 +2,12 @@ import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import instanceRoutes from "./routes/instance.routes";
 import userRoutes from "./routes/user.routes";
-import { ErrorHandlingService } from "./services/error-handling.service";
 
 export class App {
-  private app: Application;
+  private _app: Application;
 
   constructor() {
-    this.app = express();
+    this._app = express();
     this._configureMiddleware();
     this._configureRoutes();
     this._configureErrorHandling();
@@ -16,36 +15,39 @@ export class App {
 
   private _configureMiddleware() {
     console.log("Configuring middleware");
-    this.app.use(express.json());
+    this._app.use(express.json());
   }
 
   private _configureRoutes() {
     console.log("Configuring routes");
-    this.app.use("/instance", instanceRoutes);
-    this.app.use("/user", userRoutes);
+    this._app.use("/instance", instanceRoutes);
+    this._app.use("/user", userRoutes);
   }
 
   private _configureErrorHandling() {
     console.log("Configuring error handling");
-    this.app.use((_req: Request, _res: Response) => {
+    this._app.use((_req: Request, _res: Response) => {
       _res.status(404).send();
     });
 
-    this.app.use(
+    this._app.use(
       (err: Error, _req: Request, res: Response, _next: NextFunction) => {
-        const response = ErrorHandlingService.get500InternalErrorResponse(err);
-        res.status(response.status).json(response.body);
+        res.status(500).json({
+          message: "Internal Server Error",
+          error: err.message,
+          stack: err.stack?.split("\n"),
+        });
       },
     );
   }
 
   public listen(port: number | string) {
-    this.app.listen(port, () => {
+    this._app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });
   }
 
   public getServer(): Application {
-    return this.app;
+    return this._app;
   }
 }
