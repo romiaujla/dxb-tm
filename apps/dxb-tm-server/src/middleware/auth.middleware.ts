@@ -8,7 +8,7 @@ export const authMiddleware = (
     next: NextFunction,
 ) => {
     try {
-        const token = request.headers.authorization?.split(" ")[1];
+        const token = request.cookies.token;
 
         if (token == null) {
             throw new UnauthorizedError("Unauthorized: No token provided");

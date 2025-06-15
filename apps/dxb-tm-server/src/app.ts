@@ -1,9 +1,12 @@
+import cookieParser from "cookie-parser";
 import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
+import { NodeEnvEnum } from "./enums/node-env.enum";
 import { AppError } from "./errors/app.error";
 import { authMiddleware } from "./middleware/auth.middleware";
 import authRoutes from "./routes/auth.routes";
 import instanceRoutes from "./routes/instance.routes";
+import testUserRoute from "./routes/test-user.route";
 import userRoutes from "./routes/user.routes";
 
 export class App {
@@ -19,10 +22,16 @@ export class App {
     private _configureMiddleware() {
         console.log("Configuring middleware...");
         this._app.use(express.json());
+        this._app.use(cookieParser());
     }
 
     private _configureRoutes() {
         console.log("Configuring routes...");
+
+        if (process.env.NODE_ENV === NodeEnvEnum.TEST) {
+            this._app.use("/test-user", testUserRoute);
+        }
+
         this._app.use("/auth", authRoutes);
         this._app.use("/instance", authMiddleware, instanceRoutes);
         this._app.use("/user", authMiddleware, userRoutes);
