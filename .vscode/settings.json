@@ -3,5 +3,7 @@
     {
       "mode": "auto"
     }
-  ]
+  ],
+  "editor.fontFamily": "Monaco",
+  "editor.fontSize": 12
 }
