@@ -1,6 +1,7 @@
 import type { Application, NextFunction, Request, Response } from "express";
 import express from "express";
 import { AppError } from "./errors/app.error";
+import authRoutes from "./routes/auth.routes";
 import instanceRoutes from "./routes/instance.routes";
 import userRoutes from "./routes/user.routes";
 
@@ -21,6 +22,7 @@ export class App {
 
   private _configureRoutes() {
     console.log("Configuring routes...");
+    this._app.use("/auth", authRoutes);
     this._app.use("/instance", instanceRoutes);
     this._app.use("/user", userRoutes);
   }
@@ -29,6 +31,7 @@ export class App {
     console.log("Configuring error handling...");
     this._app.use(
       (err: Error, _req: Request, res: Response, _next: NextFunction) => {
+        console.log(err);
         if (err instanceof AppError) {
           res.status(err.statusCode).json({
             message: err.message,

@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { expect } from "chai";
 import type { UserModel } from "dxb-tm-core";
 import request from "supertest";
@@ -39,7 +40,12 @@ describe("User Routes /user", () => {
       expect(body.firstName).to.equal(data.firstName);
       expect(body.middleName).to.equal(data.middleName);
       expect(body.lastName).to.equal(data.lastName);
-      expect(body.password).to.equal(data.password);
+      expect(body.password).to.not.equal(data.password);
+      const isPasswordValid = await bcrypt.compare(
+        data.password,
+        body.password,
+      );
+      expect(isPasswordValid).to.equal(true);
       expect(body.active).to.equal(true);
     });
 

@@ -1,7 +1,7 @@
 import type { UserModel } from "dxb-tm-core";
 import type { NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UnauthorizedError } from "../errors/app.error";
+import { InternalServerError, UnauthorizedError } from "../errors/app.error";
 
 export class JwtService {
   private _jwtSecret: string;
@@ -16,12 +16,21 @@ export class JwtService {
     email: UserModel["email"];
     id: UserModel["id"];
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const accessToken = jwt.sign(payload, this._jwtSecret, { expiresIn: "1h" });
-    const refreshToken = jwt.sign(payload, this._jwtRefreshSecret, {
-      expiresIn: "7d",
-    });
+    console.log("secret", this._jwtSecret);
+    console.log("refresh secret", this._jwtRefreshSecret);
 
-    return { accessToken, refreshToken };
+    try {
+      const accessToken = jwt.sign(payload, this._jwtSecret, {
+        expiresIn: "1h",
+      });
+      const refreshToken = jwt.sign(payload, this._jwtRefreshSecret, {
+        expiresIn: "7d",
+      });
+
+      return { accessToken, refreshToken };
+    } catch (error) {
+      throw new InternalServerError("Unable to generate tokens");
+    }
   }
 
   public verifyToken(request: Request, next: NextFunction) {

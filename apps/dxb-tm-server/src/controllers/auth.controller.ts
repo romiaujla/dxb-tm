@@ -25,6 +25,8 @@ export class AuthController {
   > {
     const { email, password } = request.body;
 
+    console.log("handleLogin", request.body);
+
     if (email == null) {
       throw new BadRequestError("Email is required");
     }

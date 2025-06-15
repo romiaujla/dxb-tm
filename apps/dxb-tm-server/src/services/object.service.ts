@@ -1,4 +1,5 @@
-import type { ObjectNameEnum } from "dxb-tm-core";
+import bcrypt from "bcryptjs";
+import { ObjectNameEnum } from "dxb-tm-core";
 import { ObjectDeleteTypeEnum } from "../enums/object-delete-type.enum";
 import {
   BadRequestError,
@@ -28,6 +29,16 @@ export class ObjectService {
 
     try {
       const modelDelegate = (this.prisma as any)[objectName];
+
+      if (objectName === ObjectNameEnum.USER) {
+        if (
+          "password" in data &&
+          typeof data.password === "string" &&
+          data.password != null
+        ) {
+          data.password = await bcrypt.hash(data.password, 10);
+        }
+      }
 
       const newObject = (await modelDelegate.create({
         data: {
