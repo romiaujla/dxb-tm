@@ -17,7 +17,10 @@ router.post("/login", async (request, response, next) => {
                 secure: process.env.NODE_ENV === "production",
                 maxAge,
             });
-            response.status(status).json(res.body);
+
+            response.status(status).json({
+                message: "Login successful",
+            });
         } else {
             response.status(status).json(res);
         }
@@ -30,6 +33,16 @@ router.post("/logout", async (_request, response, next) => {
     try {
         response.clearCookie("token");
         response.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+        next(error);
+    }
+});
+
+router.get("/validate", async (request, response, next) => {
+    try {
+        const res = await authController.handleValidate(request);
+
+        response.status(res.status).json(res);
     } catch (error) {
         next(error);
     }

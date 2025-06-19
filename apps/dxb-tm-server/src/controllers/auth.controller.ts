@@ -72,4 +72,27 @@ export class AuthController {
             },
         };
     }
+
+    public async handleValidate(request: {
+        cookies: { token?: string };
+    }): Promise<
+        ResponseDataModel<{
+            email: string;
+            id: string;
+        }>
+    > {
+        const decoded = this._jwtService.verifyToken(request);
+
+        if (decoded == null) {
+            throw new UnauthorizedError("Invalid token");
+        }
+
+        return {
+            status: 200,
+            body: {
+                message: "Token is valid",
+                data: decoded,
+            },
+        };
+    }
 }
