@@ -149,10 +149,10 @@ const LoginPage = () => {
                                     Login
                                 </Button>
                                 <Button
-                                    variant="outline"
+                                    variant="link"
                                     className="w-full cursor-pointer"
                                 >
-                                    Sign Up
+                                    Login as Demo
                                 </Button>
                             </div>
                         </form>
