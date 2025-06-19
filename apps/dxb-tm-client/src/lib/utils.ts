@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
 
-export async function sendRequest(
+export async function httpRequest(
     endpoint: string,
     headers: Record<string, string>,
 ): Promise<Response> {

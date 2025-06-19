@@ -1,12 +1,19 @@
-import { cookies } from "next/headers";
-import Link from "next/link";
+"use client";
 
-export default async function Home() {
-    const token = (await cookies()).get("token");
+import { useAuth } from "dxb-tm/lib/hooks/use-auth";
+import { redirect } from "next/navigation";
+import { useEffect } from "react";
 
-    return (
-        <main className="flex h-screen w-screen items-center justify-center">
-            <Link href="/auth/login">Login Page</Link>
-        </main>
-    );
+export default function Home() {
+    const { isAuthenticated } = useAuth();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            redirect("/dashboard");
+        } else {
+            redirect("/login");
+        }
+    }, [isAuthenticated]);
+
+    return null;
 }
