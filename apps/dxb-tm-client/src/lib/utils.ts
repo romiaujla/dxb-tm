@@ -27,11 +27,8 @@ export async function httpRequest(options: {
             return response;
         }
 
-        // @ts-ignore
-        console.log("response", response);
-        throw new Error(`${response.body.message}`);
+        throw new Error(response.statusText);
     } catch (error) {
-        console.error("1", error);
         throw new Error(
             error instanceof Error
                 ? error.message
