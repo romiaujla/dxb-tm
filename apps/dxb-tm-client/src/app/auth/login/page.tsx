@@ -14,7 +14,7 @@ import { Input } from "dxb-tm/components/ui/input";
 const LoginPage = () => {
     return (
         <div className="">
-            <div className="absolute top-10 right-10">
+            <div className="fixed top-10 right-10">
                 <ModeToggle />
             </div>
             <Card className="w-full max-w-sm mx-auto mt-10">

@@ -1,13 +1,12 @@
-import { ModeToggle } from "dxb-tm/components/mode-toggle";
+import { cookies } from "next/headers";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+    const token = (await cookies()).get("token");
+
     return (
         <main className="flex h-screen w-screen items-center justify-center">
-            Home Page
-            <br />
             <Link href="/auth/login">Login Page</Link>
-            <ModeToggle />
         </main>
     );
 }

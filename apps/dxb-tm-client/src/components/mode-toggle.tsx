@@ -8,11 +8,17 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "dxb-tm/components/ui/dropdown-menu";
 
 export function ModeToggle() {
-    const { setTheme } = useTheme();
+    const { setTheme, theme } = useTheme();
+    let currentTheme = "System";
+    if (theme != null && typeof theme === "string") {
+        currentTheme = theme.charAt(0).toUpperCase() + theme.slice(1);
+    }
 
     return (
         <DropdownMenu>
@@ -24,6 +30,10 @@ export function ModeToggle() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+                <DropdownMenuLabel className="text-xs font-bold text-muted-foreground">
+                    Current Theme: {currentTheme}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => setTheme("light")}>
                     Light
                 </DropdownMenuItem>
