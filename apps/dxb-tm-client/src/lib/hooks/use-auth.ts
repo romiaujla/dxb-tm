@@ -1,9 +1,11 @@
 "use client";
 
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { httpRequest } from "../utils";
 
 export function useAuth(): AuthContextType {
+    const router = useRouter();
+
     return {
         isAuthenticated: false,
         isLoading: false,
@@ -15,7 +17,7 @@ export function useAuth(): AuthContextType {
             password: string;
         }): Promise<void> => {
             try {
-                await httpRequest({
+                const response = await httpRequest({
                     endpoint: "/auth/login",
                     method: "POST",
                     headers: {
@@ -24,7 +26,11 @@ export function useAuth(): AuthContextType {
                     body: { email, password },
                 });
 
-                redirect("/dashboard");
+                if (response.ok) {
+                    router.push("/dashboard");
+                }
+
+                throw new Error(response.statusText);
             } catch (error: unknown) {
                 throw new Error(
                     error instanceof Error

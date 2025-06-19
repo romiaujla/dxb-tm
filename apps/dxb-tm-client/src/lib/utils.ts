@@ -27,7 +27,13 @@ export async function httpRequest(options: {
             return response;
         }
 
-        throw new Error(response.statusText);
+        let errorMessage = response.statusText;
+        const data = await response.json();
+        if (data && data.message) {
+            errorMessage = data.message;
+        }
+
+        throw new Error(errorMessage);
     } catch (error) {
         throw new Error(
             error instanceof Error
