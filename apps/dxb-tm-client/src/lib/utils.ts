@@ -23,6 +23,8 @@ export async function httpRequest(options: {
             },
         );
 
+        console.log(" 1 response", await response.json());
+
         if (response.ok) {
             return response;
         }

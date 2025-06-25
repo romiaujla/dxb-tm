@@ -41,7 +41,7 @@ export class JwtService {
 
         const decoded = jwt.verify(token, this._jwtSecret, (err, decoded) => {
             if (err) {
-                throw new UnauthorizedError();
+                throw new UnauthorizedError("Unable to verify token");
             }
 
             return decoded;

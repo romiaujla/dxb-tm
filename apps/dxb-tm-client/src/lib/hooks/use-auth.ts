@@ -37,17 +37,35 @@ export function useAuth(): AuthContextType {
         }
     };
 
+    const validate = async (): Promise<boolean> => {
+        try {
+            const response = await httpRequest({
+                endpoint: "/auth/validate",
+                method: "GET",
+            });
+
+            console.log("response", response);
+
+            if (response.ok) {
+                return true;
+            }
+
+            return false;
+        } catch (error: unknown) {
+            router.push("/login");
+            return false;
+        }
+    };
+
     return {
-        isAuthenticated: false,
-        isLoading: false,
+        validate,
         login,
         logout: () => {},
     };
 }
 
 export interface AuthContextType {
-    isAuthenticated: boolean;
-    isLoading: boolean;
+    validate: () => Promise<boolean>;
     login: ({
         email,
         password,

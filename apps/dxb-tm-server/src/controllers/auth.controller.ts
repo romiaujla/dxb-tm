@@ -81,8 +81,11 @@ export class AuthController {
             id: string;
         }>
     > {
+        console.log("request", request);
+
         const decoded = this._jwtService.verifyToken(request);
 
+        console.log("decoded", decoded);
         if (decoded == null) {
             throw new UnauthorizedError("Invalid token");
         }

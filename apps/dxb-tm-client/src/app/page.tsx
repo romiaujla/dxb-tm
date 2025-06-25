@@ -5,15 +5,20 @@ import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Home() {
-    const { isAuthenticated } = useAuth();
+    const { validate } = useAuth();
 
     useEffect(() => {
-        if (isAuthenticated) {
-            redirect("/dashboard");
-        } else {
-            redirect("/login");
-        }
-    }, [isAuthenticated]);
+        const validateAuth = async () => {
+            const isAuthenticated = await validate();
+            if (isAuthenticated) {
+                redirect("/dashboard");
+            } else {
+                redirect("/login");
+            }
+        };
+
+        validateAuth();
+    }, [validate]);
 
     return null;
 }
