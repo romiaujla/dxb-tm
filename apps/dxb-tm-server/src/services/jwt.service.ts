@@ -1,5 +1,4 @@
 import type { UserModel } from "dxb-tm-core";
-import type { NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { InternalServerError, UnauthorizedError } from "../errors/app.error";
 
@@ -30,27 +29,24 @@ export class JwtService {
         }
     }
 
-    public verifyToken(request: Request, next: NextFunction) {
-        const authHeader = request.headers.get("authorization");
-
-        if (authHeader == null) {
-            throw new UnauthorizedError();
-        }
-
-        const token = authHeader.split(" ")[1];
+    public verifyToken(request: { cookies: { token?: string } }): {
+        email: string;
+        id: string;
+    } {
+        const token = request.cookies.token;
 
         if (token == null) {
-            throw new UnauthorizedError();
+            throw new UnauthorizedError("Token missing in cookies");
         }
 
-        jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-            if (err) {
-                throw new UnauthorizedError();
-            }
-
-            // @ts-ignore
-            request.user = decoded;
-            next();
-        });
+        try {
+            const decoded = jwt.verify(token, this._jwtSecret);
+            return decoded as unknown as {
+                email: string;
+                id: string;
+            };
+        } catch (error) {
+            throw new UnauthorizedError("Unable to verify token");
+        }
     }
 }

@@ -1,0 +1,88 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { httpRequest } from "../utils";
+
+export function useAuth(): AuthContextType {
+    const router = useRouter();
+
+    const login = async ({
+        email,
+        password,
+    }: {
+        email: string;
+        password: string;
+    }): Promise<void> => {
+        try {
+            const response = await httpRequest({
+                endpoint: "/auth/login",
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: { email, password },
+            });
+
+            if (response.ok) {
+                router.push("/dashboard");
+            }
+
+            throw new Error(response.statusText);
+        } catch (error: unknown) {
+            throw new Error(
+                error instanceof Error
+                    ? error.message
+                    : "An unknown error occurred",
+            );
+        }
+    };
+
+    const validate = async (): Promise<boolean> => {
+        try {
+            const response = await httpRequest({
+                endpoint: "/auth/validate",
+                method: "GET",
+            });
+
+            if (response.ok) {
+                return true;
+            }
+
+            return false;
+        } catch (error: unknown) {
+            router.push("/login");
+            return false;
+        }
+    };
+
+    const logout = async (): Promise<void> => {
+        try {
+            await httpRequest({
+                endpoint: "/auth/logout",
+                method: "POST",
+            });
+            router.push("/login");
+        } catch (error: unknown) {
+            console.error("Logout error:", error);
+            router.push("/login");
+        }
+    };
+
+    return {
+        validate,
+        login,
+        logout,
+    };
+}
+
+export interface AuthContextType {
+    validate: () => Promise<boolean>;
+    login: ({
+        email,
+        password,
+    }: {
+        email: string;
+        password: string;
+    }) => Promise<void>;
+    logout: () => void;
+}
