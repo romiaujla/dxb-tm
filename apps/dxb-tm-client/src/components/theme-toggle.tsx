@@ -13,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "dxb-tm/components/ui/dropdown-menu";
 
-export function ModeToggle() {
+export function ThemeToggle() {
     const { setTheme, theme } = useTheme();
     let currentTheme = "System";
     if (theme != null && typeof theme === "string") {

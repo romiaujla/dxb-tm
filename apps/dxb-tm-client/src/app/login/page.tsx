@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ModeToggle } from "dxb-tm/components/mode-toggle";
+import { ThemeToggle } from "dxb-tm/components/theme-toggle";
 import {
     Alert,
     AlertDescription,
@@ -89,7 +89,7 @@ const LoginPage = () => {
             )}
 
             <div className="fixed top-10 right-10">
-                <ModeToggle />
+                <ThemeToggle />
             </div>
             <Card className="w-full max-w-sm mx-auto mt-10">
                 <CardHeader className="text-center">
