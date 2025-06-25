@@ -36,20 +36,17 @@ export class JwtService {
         const token = request.cookies.token;
 
         if (token == null) {
-            throw new UnauthorizedError();
+            throw new UnauthorizedError("Token missing in cookies");
         }
 
-        const decoded = jwt.verify(token, this._jwtSecret, (err, decoded) => {
-            if (err) {
-                throw new UnauthorizedError("Unable to verify token");
-            }
-
-            return decoded;
-        });
-
-        return decoded as unknown as {
-            email: string;
-            id: string;
-        };
+        try {
+            const decoded = jwt.verify(token, this._jwtSecret);
+            return decoded as unknown as {
+                email: string;
+                id: string;
+            };
+        } catch (error) {
+            throw new UnauthorizedError("Unable to verify token");
+        }
     }
 }

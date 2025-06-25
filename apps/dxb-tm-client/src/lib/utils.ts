@@ -14,16 +14,14 @@ export async function httpRequest(options: {
 }): Promise<Response> {
     const { endpoint, headers, method, body } = options;
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
-            {
-                headers: { ...headers, "Content-Type": "application/json" },
-                method,
-                body: JSON.stringify(body),
-            },
-        );
-
-        console.log(" 1 response", await response.json());
+        const apiUrl =
+            process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+        const response = await fetch(`${apiUrl}${endpoint}`, {
+            headers: { ...headers, "Content-Type": "application/json" },
+            method,
+            body: JSON.stringify(body),
+            credentials: "include",
+        });
 
         if (response.ok) {
             return response;

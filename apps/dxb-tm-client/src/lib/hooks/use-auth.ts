@@ -44,8 +44,6 @@ export function useAuth(): AuthContextType {
                 method: "GET",
             });
 
-            console.log("response", response);
-
             if (response.ok) {
                 return true;
             }
@@ -57,10 +55,23 @@ export function useAuth(): AuthContextType {
         }
     };
 
+    const logout = async (): Promise<void> => {
+        try {
+            await httpRequest({
+                endpoint: "/auth/logout",
+                method: "POST",
+            });
+            router.push("/login");
+        } catch (error: unknown) {
+            console.error("Logout error:", error);
+            router.push("/login");
+        }
+    };
+
     return {
         validate,
         login,
-        logout: () => {},
+        logout,
     };
 }
 

@@ -10,6 +10,7 @@ export default function Home() {
     useEffect(() => {
         const validateAuth = async () => {
             const isAuthenticated = await validate();
+
             if (isAuthenticated) {
                 redirect("/dashboard");
             } else {
