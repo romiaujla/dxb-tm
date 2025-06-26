@@ -50,6 +50,8 @@ model User {
   active     Boolean @default(true)
 
   userInstances UserInstance[]
+  userRoles UserRole[]
+  userRolePermissions UserRolePermission[]
 
   @@map("user")
 }
@@ -64,10 +66,102 @@ model UserInstance {
   deletedById Int?
 
   fkUserId     Int
-  fkInstanceId Int
-
   user     User     @relation(fields: [fkUserId], references: [id])
+
+  fkInstanceId Int
   instance Instance @relation(fields: [fkInstanceId], references: [id])
 
   @@map("user_instance")
+}
+
+model Role {
+	id Int @id @default(autoincrement())
+	createdAt DateTime @default(now())
+	createdById Int
+	updatedAt DateTime @updatedAt
+	updatedById Int
+	deletedAt DateTime?
+	deletedById Int?
+
+	name String
+	description String?
+
+	userRoles UserRole[]
+	rolePermissions RolePermission[]
+
+	@@map("role")
+}
+
+model UserRole {
+	id Int @id @default(autoincrement())
+	createdAt DateTime @default(now())
+	createdById Int
+	updatedAt DateTime @updatedAt
+	updatedById Int
+	deletedAt DateTime?
+	deletedById Int?
+
+	fkRoleId Int
+	role Role @relation(fields: [fkRoleId], references: [id])
+
+	fkUserId Int
+	user User @relation(fields: [fkUserId], references: [id])
+
+	@@map("user_role")
+}
+
+model Permission {
+	id Int @id @default(autoincrement())
+	createdAt DateTime @default(now())
+	createdById Int
+	updatedAt DateTime @updatedAt
+	updatedById Int
+	deletedAt DateTime?
+	deletedById Int?
+
+	action String @unique
+	description String?
+
+	rolePermissions RolePermission[]
+
+	@@map("permission")
+}
+
+model RolePermission {
+	id Int @id @default(autoincrement())
+	createdAt DateTime @default(now())
+	createdById Int
+	updatedAt DateTime @updatedAt
+	updatedById Int
+	deletedAt DateTime?
+	deletedById Int?
+
+	fkRoleId Int
+	role Role @relation(fields: [fkRoleId], references: [id])
+
+	fkPermissionId Int
+	permission Permission @relation(fields: [fkPermissionId], references: [id])
+
+	userRolePermissions UserRolePermission[]
+
+	@@map("role_permission")
+}
+
+
+model UserRolePermission {
+	id Int @id @default(autoincrement())
+	createdAt DateTime @default(now())
+	createdById Int
+	updatedAt DateTime @updatedAt
+	updatedById Int
+	deletedAt DateTime?
+	deletedById Int?
+
+	fkUserId Int
+	user User @relation(fields: [fkUserId], references: [id])
+
+	fkRolePermissionId Int
+	rolePermission RolePermission @relation(fields: [fkRolePermissionId], references: [id])
+
+	@@map("user_role_permission")
 }
