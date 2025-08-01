@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { DefaultDbFieldsSchema } from "./default-db-fields.model";
 
-export const RoleSchema = DefaultDbFieldsSchema.merge(
+export const PermissionSchema = DefaultDbFieldsSchema.merge(
     z.object({
-        name: z.string(),
+        action: z.string(),
         description: z.string().optional(),
     }),
 );
 
-export type RoleModel = z.infer<typeof RoleSchema>;
+export type PermissionModel = z.infer<typeof PermissionSchema>;
