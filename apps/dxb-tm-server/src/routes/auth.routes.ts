@@ -31,6 +31,7 @@ router.post("/login", async (request, response, next) => {
             response.status(status).json(res);
         }
     } catch (error) {
+        console.log(error);
         next(error);
     }
 });

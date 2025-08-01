@@ -23,6 +23,7 @@ export class AuthController {
             refreshToken: string;
         }>
     > {
+        console.log('body', request.body);
         const { email, password } = request.body;
 
         if (email == null) {

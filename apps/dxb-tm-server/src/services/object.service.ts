@@ -233,9 +233,13 @@ export class ObjectService {
 
         const modelDelegate = (this.prisma as any)[objectName];
 
+        console.log(236)
+
         const objects = (await modelDelegate.findMany({
             where: query,
         })) as Array<T>;
+
+        console.log('objects', objects);
 
         return {
             status: 200,
