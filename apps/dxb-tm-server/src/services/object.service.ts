@@ -7,6 +7,7 @@ import {
     NotFoundError,
 } from "../errors/app.error";
 import { Prisma, PrismaClient } from "../generated/prisma";
+import type { ObjectServiceQuerySelectModel } from "../models";
 import type { ObjectCreateResponse } from "../models/object-create-response.model";
 import type { ObjectDeleteResponse } from "../models/object-delete-response.model";
 import type { ObjectGetResponse } from "../models/object-get-response.model";
@@ -235,6 +236,56 @@ export class ObjectService {
 
         const objects = (await modelDelegate.findMany({
             where: query,
+        })) as Array<T>;
+
+        return {
+            status: 200,
+            body: {
+                message: `${objectName} fetched successfully`,
+                data: objects,
+            },
+        };
+    }
+
+    public async getObjectByQueryWithInclude<T, TQuery>(
+        options: {
+            objectName: ObjectNameEnum;
+            query: TQuery;
+            include: Record<string, boolean>;
+        },
+    ): Promise<ObjectGetResponse<T>> {
+        const { objectName, query, include } = options;
+
+        const modelDelegate = (this.prisma as any)[objectName];
+
+        const objects = (await modelDelegate.findMany({
+            where: query,
+            include,
+        })) as Array<T>;
+
+        return {
+            status: 200,
+            body: {
+                message: `${objectName} fetched successfully`,
+                data: objects,
+            },
+        };
+    }
+
+    public async getObjectByQueryWithSelectedFields<T, TQuery>(
+        options: {
+            objectName: ObjectNameEnum;
+            query: TQuery;
+            select: ObjectServiceQuerySelectModel;
+        },
+    ): Promise<ObjectGetResponse<T>> {
+        const { objectName, query, select } = options;
+
+        const modelDelegate = (this.prisma as any)[objectName];
+
+        const objects = (await modelDelegate.findMany({
+            where: query,
+            select,
         })) as Array<T>;
 
         return {

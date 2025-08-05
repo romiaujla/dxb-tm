@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { ObjectNameEnum, type UserModel } from "dxb-tm-core";
+import { ObjectNameEnum, type RoleModel, type UserModel, type UserRoleModel } from "dxb-tm-core";
 import { BadRequestError, UnauthorizedError } from "../errors/app.error";
 import type { Prisma } from "../generated/prisma";
 import type { ResponseDataModel } from "../models/response-data.model";
@@ -19,6 +19,7 @@ export class AuthController {
         body: { email: string; password: string };
     }): Promise<
         ResponseDataModel<{
+            user: LoggedInUserModel;
             accessToken: string;
             refreshToken: string;
         }>
@@ -34,13 +35,32 @@ export class AuthController {
         }
 
         const user = (
-            await this._objectService.getObjectByQuery<
-                UserModel,
+            await this._objectService.getObjectByQueryWithSelectedFields<
+                LoggedInUserModel,
                 Prisma.UserWhereInput
             >({
                 objectName: ObjectNameEnum.USER,
                 query: {
                     email,
+                },
+                select: {
+                    id: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    active: true,
+                    password: true,
+                    userRoles: {
+                        select: {
+                            fkUserId: true,
+                            fkRoleId: true,
+                            role: {
+                                select: {
+                                    name: true,
+                                }
+                            }
+                        }
+                    }
                 },
             })
         ).body.data?.[0];
@@ -66,6 +86,7 @@ export class AuthController {
             body: {
                 message: "Login successful",
                 data: {
+                    user,
                     accessToken,
                     refreshToken,
                 },
@@ -95,4 +116,11 @@ export class AuthController {
             },
         };
     }
+}
+
+
+interface LoggedInUserModel extends Pick<UserModel, "id" | "email" | "firstName" | "lastName" | "active" | 'password'> {
+    userRoles: Array<Pick<UserRoleModel, "fkUserId" | "fkRoleId"> & {
+        role: Pick<RoleModel, "name">;
+    }>
 }

@@ -88,6 +88,7 @@ async function main() {
         },
     ];
     let superAdminRoleId: RoleModel["id"] | null = null;
+    let adminRoleId: RoleModel["id"] | null = null;
 
     for (const role of roleList) {
         const createdRole = await prisma.role.create({
@@ -102,6 +103,10 @@ async function main() {
 
         if (createdRole.name === "Super Admin") {
             superAdminRoleId = createdRole.id;
+        }
+
+        if (createdRole.name === "Admin") {
+            adminRoleId = createdRole.id;
         }
 
         console.log(`Created role '${createdRole.name}' with id: ${createdRole.id}`);
@@ -124,6 +129,25 @@ async function main() {
         console.log(`🌱 Assigned Super Admin role to user '${superUser.firstName}'`);
     } else {
         console.error("🛑 Error: Super Admin role not found, Super User was unable to be assigned the Super Admin role.");
+    }
+
+    if (adminRoleId != null) {
+        console.log('🌱 Assigning Admin role to Super User...');
+
+        await prisma.userRole.create({
+            data: {
+                fkUserId: superUser.id,
+                fkRoleId: adminRoleId,
+                createdById: superUser.id,
+                updatedById: superUser.id,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            },
+        });
+
+        console.log(`🌱 Assigned Admin role to user '${superUser.firstName}'`);
+    } else {
+        console.error("🛑 Error: Admin role not found, Super User was unable to be assigned the Admin role.");
     }
 
     console.log(`🌱 Seeding finished.`);

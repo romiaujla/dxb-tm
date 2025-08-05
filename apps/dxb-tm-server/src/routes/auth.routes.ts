@@ -9,7 +9,7 @@ router.post("/login", async (request, response, next) => {
     try {
         const res = await authController.handleLogin(request);
         let status = res.status;
-        const { accessToken } = res.body.data;
+        const { accessToken, user } = res.body.data;
 
         if (status === 200) {
             response.cookie("token", accessToken, {
@@ -26,6 +26,13 @@ router.post("/login", async (request, response, next) => {
 
             response.status(status).json({
                 message: "Login successful",
+                data: {
+                    email: user.email,
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    roleList: user.userRoles.map((role) => role.role.name),
+                }
             });
         } else {
             response.status(status).json(res);
